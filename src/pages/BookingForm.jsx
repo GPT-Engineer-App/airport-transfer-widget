@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Container, VStack, Input, Button, FormControl, FormLabel, Select, useToast } from "@chakra-ui/react";
-import { FaPlane, FaCalendarAlt, FaUser, FaEnvelope, FaMoneyBillWave } from "react-icons/fa";
+import { Container, VStack, Input, Button, FormControl, FormLabel, Select, useToast, HStack } from "@chakra-ui/react";
+import { FaPlane, FaCalendarAlt, FaUser, FaEnvelope, FaMoneyBillWave, FaClock, FaSuitcase, FaInfoCircle } from "react-icons/fa";
 import emailjs from "emailjs-com";
 
 const airports = [
@@ -10,7 +10,7 @@ const airports = [
 ];
 
 const BookingForm = () => {
-  const [formData, setFormData] = useState({ name: "", email: "", date: "", airport: "", price: 0 });
+  const [formData, setFormData] = useState({ name: "", email: "", date: "", airport: "", price: 0, flightDetails: "", pickUpTime: "", luggageQuantity: "" });
   const toast = useToast();
 
   const handleChange = (e) => {
@@ -25,26 +25,40 @@ const BookingForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", formData, "YOUR_USER_ID").then(
-      (result) => {
-        toast({
-          title: "Booking Successful",
-          description: "Your booking has been sent successfully.",
-          status: "success",
-          duration: 5000,
-          isClosable: true,
-        });
-      },
-      (error) => {
-        toast({
-          title: "Booking Failed",
-          description: "There was an error sending your booking.",
-          status: "error",
-          duration: 5000,
-          isClosable: true,
-        });
-      },
-    );
+    emailjs
+      .send(
+        "YOUR_SERVICE_ID",
+        "YOUR_TEMPLATE_ID",
+        {
+          ...formData,
+          airport: formData.airport,
+          price: formData.price,
+          flightDetails: formData.flightDetails,
+          pickUpTime: formData.pickUpTime,
+          luggageQuantity: formData.luggageQuantity,
+        },
+        "YOUR_USER_ID",
+      )
+      .then(
+        (result) => {
+          toast({
+            title: "Booking Successful",
+            description: "Your booking has been sent successfully.",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+          });
+        },
+        (error) => {
+          toast({
+            title: "Booking Failed",
+            description: "There was an error sending your booking.",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        },
+      );
   };
 
   return (
@@ -67,6 +81,24 @@ const BookingForm = () => {
             <FaCalendarAlt /> Date
           </FormLabel>
           <Input type="date" name="date" value={formData.date} onChange={handleChange} />
+        </FormControl>
+        <FormControl id="flightDetails" isRequired>
+          <FormLabel>
+            <FaInfoCircle /> Flight Details
+          </FormLabel>
+          <Input type="text" name="flightDetails" value={formData.flightDetails} onChange={handleChange} />
+        </FormControl>
+        <FormControl id="pickUpTime" isRequired>
+          <FormLabel>
+            <FaClock /> Pick-Up Time
+          </FormLabel>
+          <Input type="time" name="pickUpTime" value={formData.pickUpTime} onChange={handleChange} />
+        </FormControl>
+        <FormControl id="luggageQuantity" isRequired>
+          <FormLabel>
+            <FaSuitcase /> Quantity of Luggage
+          </FormLabel>
+          <Input type="number" name="luggageQuantity" value={formData.luggageQuantity} onChange={handleChange} />
         </FormControl>
         <FormControl id="airport" isRequired>
           <FormLabel>
